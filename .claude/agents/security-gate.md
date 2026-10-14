@@ -23,12 +23,12 @@ Le parent te passe :
 3. Cherche les violations avec `Grep`/`Read`. Lecture seule : `Bash` uniquement pour `git diff`, `git log`, `git show`.
 4. Une règle est **violée** seulement si tu as vu le code fautif. "Je n'ai pas trouvé la vérification" n'est une violation que si tu as lu la route en entier.
 5. Classe chaque finding :
-   - **bloquant** : fuite inter-org, auth/entitlement absent, injection SQL, secret en clair, webhook sans signature
+   - **bloquant** : fuite de données entre utilisateurs ou organisations, auth/autorisation absente, injection SQL, secret en clair, webhook sans signature
    - **mineur** : durcissement, message d'erreur non i18n, log trop verbeux
 
 ## Mode `plan`
 
-Pour chaque tâche du plan qui touche une surface sensible (route, auth, upload, SQL, secret, canal, prompt Clara), propose 1 à 3 critères "Fait quand" sécurité **vérifiables par une commande ou une lecture de fichier**, tirés de la checklist. Ignore les tâches non sensibles. Pas de critère vague ("sécuriser la route").
+Pour chaque tâche du plan qui touche une surface sensible (route, auth, upload, SQL, secret, canal, prompt LLM), propose 1 à 3 critères "Fait quand" sécurité **vérifiables par une commande ou une lecture de fichier**, tirés de la checklist. Ignore les tâches non sensibles. Pas de critère vague ("sécuriser la route").
 
 ## Format de sortie (strict)
 

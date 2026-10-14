@@ -27,6 +27,8 @@
 | Skill | Pour quoi | Quand |
 |-------|-----------|-------|
 | `/challenge` | Devil's advocate sur un plan : 3 risques + 3 hypothèses non vérifiées + verdict GO/REWORK/STOP. | Avant `/execute`, systématique en Request Classification FULL |
+| `tool-security-gate` | Passe sécurité : mode plan (appelé par `/plan`) et mode gate (appelé par `/execute`), verdict ✅/⚠️/❌. | Automatique, voir « Passe sécurité » |
+| `/security-watch` | Veille CVE et audit des dépendances (CERT-FR, CISA, OSV.dev). | Sur demande |
 
 ### Hors table — built-in & utilitaires
 
@@ -98,6 +100,34 @@ Auto-invoqués quand tu touches à n8n. Attribution dans `.claude/skills/n8n/LIC
 ```
 
 ---
+
+## `/feature` ou `/evoluer` ?
+
+Les deux ajoutent une feature à un projet qui existe déjà. Seule change la présence d'un PRD :
+
+| Ton projet… | Skill |
+|-------------|-------|
+| n'a jamais eu de PRD (code hérité, projet hors kit, prototype) | `/feature` |
+| a un PRD au format du kit et est livré | `/evoluer` |
+| a un PRD et une phase en cours | `/plan` directement |
+| est neuf, l'idée est floue | `/brainstorm` puis `/architect` |
+
+`/feature` lit le code, pose 3 à 5 questions (dont une sur la surface sécurité), écrit un brief `docs/features/{date}-{slug}.md`, puis crée après validation les artefacts manquants (PRD reconstitué, STATUS, STRUCTURE). Il ne route jamais automatiquement : tu enchaînes `/close → /clear → /plan docs/features/{date}-{slug}.md`. Une fois le PRD reconstitué, les features suivantes passent par `/evoluer`. Exemple complet : [`examples/feature-projet-existant/`](../examples/feature-projet-existant/).
+
+## Passe sécurité (`tool-security-gate`)
+
+Un seul point d'entrée pour la sécurité dans le cycle `/plan` → `/execute`. Rien n'est lancé à la main : les deux skills l'appellent quand il le faut.
+
+| Quand | Mode | Ce que ça fait |
+|-------|------|----------------|
+| `/plan` Étape 3.5, si au moins une tâche touche une surface sensible (route non publique, auth, upload, SQL, secret, canal externe, prompt LLM) | **plan** | Ajoute une ligne `Sécurité :` sous les tâches concernées, avec des critères vérifiables (une commande ou une lecture de fichier). Ne crée pas de tâche. |
+| `/execute` Étape 2.6, une seule fois en fin de phase | **gate** | Applique la checklist au diff de la phase, lance `security-review`, et `security-watch` seulement si un manifest de dépendances a changé. Rend un verdict. |
+
+**Verdict** : ❌ FAIL (au moins un bloquant : secret en clair, SQL concaténé, route sans auth, webhook sans signature) interdit le passage à `/validate` ; ⚠️ WARN (mineurs) ne bloque pas ; ✅ PASS. La ligne « Non vérifié » signale ce qui n'a pas pu être examiné : ce n'est pas un PASS silencieux.
+
+**Règles appliquées** : la *baseline* du kit (toujours) + `docs/security-checklist.md` du repo (si elle existe, règles propres au projet). Le kit ne la crée jamais seul : `/feature` ou le gate te suggèrent de l'écrire, tu décides. Exemple : [`examples/feature-projet-existant/docs/security-checklist.md`](../examples/feature-projet-existant/docs/security-checklist.md).
+
+**Ne pas confondre** : `security-watch` = veille externe (CVE, audit de dépendances), déclenchée à la main ; `security-review` = relecture générale d'un diff ; `tool-security-gate` = checklist appliquée à une phase.
 
 ## Qui écrit quelle section du CLAUDE.md
 
@@ -408,4 +438,4 @@ Si deux évolutions le même jour ont le même slug : `SPEC-{date}-{slug}-02.md`
 - `.claude/rules/README.md` — pattern des règles auto-chargées par chemin (paths-scoped)
 - `memory/README.md` — système mémoire persistante (learnings / topics / decisions)
 - `.claude/skills/{skill}/SKILL.md` — détail d'un skill spécifique
-- `examples/` — 3 exemples remplis (site, webapp, automation)
+- `examples/` — 8 exemples remplis (site, webapp, automation, desktop, mobile, et `/feature` sur webapp, mobile et desktop existants)

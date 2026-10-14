@@ -11,7 +11,7 @@ Un seul point d'entrée pour la sécurité dans le cycle `/plan` → `/execute`.
 
 ## Sources de règles
 
-1. **Checklist du projet** : `docs/security-checklist.md` à la racine du repo, si elle existe. Règles propres au projet (modèle multi-tenant, entitlements, canaux…).
+1. **Checklist du projet** : `docs/security-checklist.md` à la racine du repo, si elle existe. Règles propres au projet (modèle multi-tenant, droits d'accès, canaux…).
 2. **Baseline** (toujours appliquée, en complément) :
    - pas de secret en dur, ni dans les logs, ni dans le diff (`.env`, clés, tokens)
    - requêtes SQL paramétrées, jamais de concaténation / f-string dans une requête

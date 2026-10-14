@@ -3,6 +3,32 @@
 > Toutes les versions notables du kit Noesia Claude Code.
 > Format inspiré de [Keep a Changelog](https://keepachangelog.com/). Versions [SemVer](https://semver.org/lang/fr/).
 
+## v2.9.1 — 2026-10-14
+
+### Corrigé
+
+- **CI rouge (144/148)** : `.gitignore` ignorait `CLAUDE.md` partout, y compris `examples/*/CLAUDE.md`. Les 6 exemples n'étaient pas versionnés alors que `validate-kit-v2.sh` les lit : le script passait en local, échouait en CI. Ajout de `!examples/**/CLAUDE.md` et versionnement des 6 fichiers.
+- **Résidus d'un autre projet** dans l'agent `security-gate` (« prompt Clara », « inter-org », « entitlement ») remplacés par des formulations génériques.
+
+### Ajouté
+
+- **Tests v2.9.0** dans `validate-kit-v2.sh` (+57 checks, puis scénario Q) : scénario M (`/feature`), N (passe sécurité : skill, agents, points d'appel dans `/plan` et `/execute`), O (`desktop` / `mobile`), P (exemples), Q (`/feature` natif et ses deux exemples). Le scénario P contient un garde-fou : chaque `examples/*/CLAUDE.md` doit être suivi par git, ce qui aurait détecté le bug ci-dessus.
+- **Doc `/feature`** (README, `docs/KIT.md`) : section « `/feature` ou `/evoluer` ? » avec table de décision.
+- **Doc passe sécurité** (README, `docs/KIT.md`) : modes plan et gate, verdicts, baseline vs checklist projet, différence avec `security-watch` et `security-review`. `tool-security-gate` et `/security-watch` ajoutés aux tables de skills.
+- **Exemples** : `examples/feature-projet-existant/docs/security-checklist.md`, et dans son README un exemple de ligne `Sécurité :` et de verdict du gate.
+- **`/feature` pour les projets natifs** : nouvelle référence `.claude/skills/feature/references/native-discovery.md` (manifestes de build, permissions, `ui_tests:`, signature, surfaces sensibles propres au mobile et au desktop), pointée depuis l'Étape 1 et l'Étape 2 de `SKILL.md` (177 lignes, sous le cap).
+- **Deux exemples `/feature` natifs** : `examples/feature-mobile-existant/` (Android, Kotlin + Compose + Room) et `examples/feature-desktop-existant/` (Tauri 2), chacun avec brief, PRD reconstitué, STATUS, STRUCTURE, CLAUDE.md (`ui_tests:`) et `docs/security-checklist.md`.
+
+### Modifié
+
+- Exemple `desktop-assistant-vocal-macos` renommé `desktop-jarvis-macos` (liens README, `examples/README.md` et tests mis à jour).
+
+### Non-breaking
+
+Aucune signature de skill modifiée. Documentation, tests et `.gitignore` uniquement.
+
+---
+
 ## v2.9.0 — 2026-10-14
 
 ### Ajouté

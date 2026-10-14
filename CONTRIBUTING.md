@@ -10,7 +10,7 @@
 ## Règles de contribution
 
 - **Non-breaking par défaut** : le kit a des vidéos pédagogiques publiques tournées contre l'UX actuelle. Tout changement qui modifie ce qu'un débutant voit (questions posées, ordre d'étapes, format de sortie) doit être discuté en issue avec un argument explicite "pourquoi le breaking justifie le coût".
-- **CI verte** : `bash scripts/validate-kit.sh && bash scripts/validate-kit-v2.sh` doit passer (38/38 + 148/148 PASS). La GitHub Action `.github/workflows/validate.yml` les exécute à chaque push.
+- **CI verte** : `bash scripts/validate-kit.sh && bash scripts/validate-kit-v2.sh` doit passer (tous les checks PASS). La GitHub Action `.github/workflows/validate.yml` les exécute à chaque push.
 - **CHANGELOG mis à jour** : toute PR ajoute une entrée datée dans `docs/CHANGELOG.md` sous le format `## v{X.Y.Z} — {YYYY-MM-DD}` avec les sections Ajouté / Modifié / Pourquoi / Non-breaking.
 - **VERSION bumpé** : patch (`v2.8.X`) pour fixes/tooling, minor (`v2.Y.0`) pour nouveau skill non-breaking, major (`vX.0.0`) pour breaking change consensuel.
 - **Cap descriptions frontmatter** : `description:` dans le YAML d'un SKILL.md doit faire ≤ 100 mots (warn) / < 120 (hard cap CI). Énonce *quand utiliser*, jamais *comment*.

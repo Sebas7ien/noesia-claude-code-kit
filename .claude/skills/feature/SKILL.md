@@ -38,6 +38,8 @@ Extrais :
 - **Livré ou non** : déploiement visible (workflow CI de deploy, URL dans README, config hosting).
 - **Points d'intégration probables** pour la feature (fichiers/modules à toucher), une fois la feature connue.
 
+**Projet natif** (`mobile` / `desktop` : `Package.swift`, `*.xcodeproj`, `build.gradle*`, `AndroidManifest.xml`, `src-tauri/`, Electron…) : lis `references/native-discovery.md` pour savoir quels manifestes, permissions et outils `ui_tests:` examiner. Pas de Playwright pour une app native.
+
 Si le projet est gros (> ~5 fichiers à lire en profondeur), propose de déléguer à `research-delegate` pour garder le contexte propre. Pas de scan exhaustif.
 
 Résume en 5-8 lignes ce que tu as compris du projet et demande confirmation avant de poursuivre.
@@ -55,7 +57,7 @@ Puis pioche (sans reposer ce qui est déjà dit) :
 
 Capacité technique nouvelle détectée (n8n, Stripe, Google Drive, email transactionnel, etc.) et absente de la stack : signale-la comme risque dans le brief ; l'installation sera traitée par `/plan` / `/evoluer`.
 
-**Surface sécurité** : repère si la feature touche une surface sensible (route non publique, auth/autorisation, upload, SQL, secret/clé, canal externe/webhook, prompt LLM, données personnelles). Si oui, pose une question dédiée : qui peut l'utiliser, quelles données sont exposées, quel secret ou service tiers est impliqué. Vérifie aussi si `docs/security-checklist.md` existe ; sinon note « baseline seule » dans le brief et suggère de la créer (ne la crée pas toi-même).
+**Surface sécurité** : repère si la feature touche une surface sensible (route non publique, auth/autorisation, upload, SQL, secret/clé, canal externe/webhook, prompt LLM, données personnelles). Si oui, pose une question dédiée : qui peut l'utiliser, quelles données sont exposées, quel secret ou service tiers est impliqué. Pour un projet natif, les surfaces propres à la plateforme (permission OS, système de fichiers, pont front ↔ natif, deep links…) sont listées dans `references/native-discovery.md`. Vérifie aussi si `docs/security-checklist.md` existe ; sinon note « baseline seule » dans le brief et suggère de la créer (ne la crée pas toi-même).
 
 Niveau de rigueur : **STANDARD** par défaut (ne pose pas la question). L'utilisateur peut demander LITE ou FULL de lui-même.
 

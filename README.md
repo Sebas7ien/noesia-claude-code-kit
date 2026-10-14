@@ -150,6 +150,8 @@ Sortie : projet cadré, outillage testé, prochain skill suggéré.
 | Skill | Rôle |
 |-------|------|
 | `/challenge` | Devil's advocate sur un plan : 3 risques + 3 hypothèses non vérifiées + verdict GO/REWORK/STOP. Systématique en Request Classification FULL. |
+| `tool-security-gate` | Passe sécurité appelée par `/plan` (critères `Sécurité :`) et `/execute` (verdict en fin de phase). Voir « Passe sécurité » ci-dessous. |
+| `/security-watch` | Veille CVE et audit des dépendances contre les bases publiques. Déclenchement manuel. |
 
 **Notes hors table** :
 - Tu commences une session sur un projet existant ? Tape `/prime` (couvre aussi la reprise après absence) — lit `PRD.md` + `STRUCTURE.md` + plans (`docs/plans/` priorité, fallback `plans/` puis racine) + git log + `MEMORY.md` et propose 1-3 actions concrètes. `/start` détecte automatiquement les projets existants et bifurque vers `/prime`.
@@ -184,16 +186,18 @@ Voir `.claude/rules/README.md` pour le détail du pattern.
 
 ## Exemples remplis
 
-Six exemples : un par `project_type`, plus un exemple de `/feature` sur projet existant :
+Huit exemples : un par `project_type`, plus trois exemples de `/feature` sur projet existant (webapp, mobile, desktop) :
 
 | Exemple | `project_type` | Niveau | Stack |
 |---------|---------------|--------|-------|
 | [`examples/site-vitrine-coach/`](examples/site-vitrine-coach/) | `site` | LITE | Next.js + Vercel + Resend |
 | [`examples/webapp-saas-freelance-devis/`](examples/webapp-saas-freelance-devis/) | `webapp` | STANDARD | Next.js + Supabase + n8n + Resend + Vercel |
 | [`examples/automation-n8n-veille-rss/`](examples/automation-n8n-veille-rss/) | `automation` | STANDARD | n8n + Supabase + Anthropic Haiku + Slack |
-| [`examples/desktop-assistant-vocal-macos/`](examples/desktop-assistant-vocal-macos/) | `desktop` | STANDARD | Swift + SwiftUI + WhisperKit + Ollama |
+| [`examples/desktop-jarvis-macos/`](examples/desktop-jarvis-macos/) | `desktop` | STANDARD | Swift + SwiftUI + WhisperKit + Ollama |
 | [`examples/mobile-suivi-habitudes/`](examples/mobile-suivi-habitudes/) | `mobile` | STANDARD | SwiftUI + Compose, stockage local, Maestro |
 | [`examples/feature-projet-existant/`](examples/feature-projet-existant/) | `webapp` (existant) | STANDARD | Node + TypeScript + PostgreSQL |
+| [`examples/feature-mobile-existant/`](examples/feature-mobile-existant/) | `mobile` (existant) | STANDARD | Kotlin + Compose + Room, Maestro |
+| [`examples/feature-desktop-existant/`](examples/feature-desktop-existant/) | `desktop` (existant) | STANDARD | Tauri 2 (Rust + Svelte), WebdriverIO |
 
 Détails et critères de choix dans [`examples/README.md`](examples/README.md). Ouvre ces fichiers en parallèle de tes propres essais — le format est plus parlant qu'une longue doc.
 
@@ -206,6 +210,34 @@ Détails et critères de choix dans [`examples/README.md`](examples/README.md). 
 - `.gitignore` durci sur `.env`, `.env.local`, `.env.*.local`, `.envrc`
 - `tmp/` (gitignored sauf `.gitkeep`) pour les fichiers temporaires : screenshots Playwright produits par l'auto-évaluation (cf. CLAUDE.md règle 6), dumps debug, outputs intermédiaires de skills. **Nettoie après usage** — le dossier existe pour ne pas polluer le repo, pas pour s'accumuler.
 - `memory/` (structure créée à l'init) + `MEMORY.md` (index racine) — **maintenu par `/close`**, pas d'édition manuelle
+
+## Passe sécurité (`tool-security-gate`)
+
+Un seul point d'entrée pour la sécurité dans le cycle `/plan` → `/execute`. Rien n'est lancé à la main : les deux skills l'appellent quand il le faut.
+
+| Quand | Mode | Ce que ça fait |
+|-------|------|----------------|
+| `/plan` Étape 3.5, si au moins une tâche touche une surface sensible (route non publique, auth, upload, SQL, secret, canal externe, prompt LLM) | **plan** | Ajoute une ligne `Sécurité :` sous les tâches concernées, avec des critères vérifiables (une commande ou une lecture de fichier). Ne crée pas de tâche. |
+| `/execute` Étape 2.6, une seule fois en fin de phase | **gate** | Applique la checklist au diff de la phase, lance `security-review`, et `security-watch` seulement si un manifest de dépendances a changé. Rend un verdict. |
+
+**Verdict** : ❌ FAIL (au moins un bloquant : secret en clair, SQL concaténé, route sans auth, webhook sans signature) interdit le passage à `/validate` ; ⚠️ WARN (mineurs) ne bloque pas ; ✅ PASS. La ligne « Non vérifié » signale ce qui n'a pas pu être examiné : ce n'est pas un PASS silencieux.
+
+**Règles appliquées** : la *baseline* du kit (toujours) + `docs/security-checklist.md` du repo (si elle existe, règles propres au projet). Le kit ne la crée jamais seul : `/feature` ou le gate te suggèrent de l'écrire, tu décides. Exemple : [`examples/feature-projet-existant/docs/security-checklist.md`](examples/feature-projet-existant/docs/security-checklist.md).
+
+**Ne pas confondre** : `security-watch` = veille externe (CVE, audit de dépendances), déclenchée à la main ; `security-review` = relecture générale d'un diff ; `tool-security-gate` = checklist appliquée à une phase.
+
+## `/feature` ou `/evoluer` ?
+
+Les deux ajoutent une feature à un projet qui existe déjà. Seule change la présence d'un PRD :
+
+| Ton projet… | Skill |
+|-------------|-------|
+| n'a jamais eu de PRD (code hérité, projet hors kit, prototype) | `/feature` |
+| a un PRD au format du kit et est livré | `/evoluer` |
+| a un PRD et une phase en cours | `/plan` directement |
+| est neuf, l'idée est floue | `/brainstorm` puis `/architect` |
+
+`/feature` lit le code, pose 3 à 5 questions (dont une sur la surface sécurité), écrit un brief `docs/features/{date}-{slug}.md`, puis crée après validation les artefacts manquants (PRD reconstitué, STATUS, STRUCTURE). Il ne route jamais automatiquement : tu enchaînes `/close → /clear → /plan docs/features/{date}-{slug}.md`. Une fois le PRD reconstitué, les features suivantes passent par `/evoluer`. Exemple complet : [`examples/feature-projet-existant/`](examples/feature-projet-existant/).
 
 ## Sécurité
 
