@@ -46,7 +46,7 @@ Pour cadrer les attentes :
 
 ## Contact
 
-- Issues : https://github.com/<ton-compte-github>/noesia-claude-code-kit/issues
+- Issues : https://github.com/Sebas7ien/noesia-claude-code-kit/issues
 - Auteur : Brice Gachadoat (`brice@sablia.io`)
 
 ## License

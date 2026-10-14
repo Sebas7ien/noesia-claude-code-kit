@@ -475,10 +475,10 @@ Aucune action utilisateur requise pour projets pré-v2.1.0 :
 - LICENSE MIT
 - README initial avec quickstart
 
-[v2.0.0]: https://github.com/<ton-compte-github>/noesia-claude-code-kit/compare/v1.5.0...HEAD
-[v1.5.0]: https://github.com/<ton-compte-github>/noesia-claude-code-kit/releases/tag/v1.5.0
-[v1.4.0]: https://github.com/<ton-compte-github>/noesia-claude-code-kit/releases/tag/v1.4.0
-[v1.3.0]: https://github.com/<ton-compte-github>/noesia-claude-code-kit/releases/tag/v1.3.0
-[v1.2.0]: https://github.com/<ton-compte-github>/noesia-claude-code-kit/releases/tag/v1.2.0
-[v1.1.0]: https://github.com/<ton-compte-github>/noesia-claude-code-kit/releases/tag/v1.1.0
-[v1.0.0]: https://github.com/<ton-compte-github>/noesia-claude-code-kit/releases/tag/v1.0.0
+[v2.0.0]: https://github.com/Sebas7ien/noesia-claude-code-kit/compare/v1.5.0...HEAD
+[v1.5.0]: https://github.com/Sebas7ien/noesia-claude-code-kit/releases/tag/v1.5.0
+[v1.4.0]: https://github.com/Sebas7ien/noesia-claude-code-kit/releases/tag/v1.4.0
+[v1.3.0]: https://github.com/Sebas7ien/noesia-claude-code-kit/releases/tag/v1.3.0
+[v1.2.0]: https://github.com/Sebas7ien/noesia-claude-code-kit/releases/tag/v1.2.0
+[v1.1.0]: https://github.com/Sebas7ien/noesia-claude-code-kit/releases/tag/v1.1.0
+[v1.0.0]: https://github.com/Sebas7ien/noesia-claude-code-kit/releases/tag/v1.0.0
