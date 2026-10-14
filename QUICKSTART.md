@@ -11,7 +11,7 @@ Tu viens de cloner ce kit. Voici ce que tu fais maintenant :
 
 `/start` → `/architect` → `/plan` → `/execute` → `/validate` → `/close`
 
-Et quand tu veux ajouter une feature à un projet livré : `/evoluer`.
+Et quand tu veux ajouter une feature à un projet livré : `/evoluer`. Sur un projet existant qui n'a jamais eu de PRD : `/feature`.
 
 Tu as un projet d'app à explorer mais pas encore cadré ? `/brainstorm` d'abord — il produit un brief que tu passes ensuite à `/architect`, `/plan` ou `/evoluer`.
 

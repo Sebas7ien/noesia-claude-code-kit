@@ -28,10 +28,10 @@ Quatre mots reviennent sans cesse dans ce kit :
 <!-- start:identité -->
 {En 2-3 phrases : ce qu'est ton projet, à qui il s'adresse, et le résultat qu'il livre. Cette section est remplie par `/start` après ses 3 questions de cadrage.}
 
-project_type: {site | webapp | automation}
+project_type: {site | webapp | automation | desktop | mobile}
 <!-- /start:identité -->
 
-> **Variable `project_type`** : déterminée par `/start`. Trois valeurs : `site` (vitrine 1-5 pages), `webapp` (SaaS auth + BDD), `automation` (workflow n8n pur). Les skills `/architect` (Étape 6), `/livrer`, `/plan` et `/design` branchent dessus. Si absente ou invalide, ils stoppent avec un message demandant de relancer `/start`.
+> **Variable `project_type`** : déterminée par `/start`. Cinq valeurs : `site` (vitrine 1-5 pages), `webapp` (SaaS auth + BDD), `automation` (workflow n8n pur), `desktop` (app native macOS / Windows / Linux), `mobile` (app native iOS / Android). Les skills `/architect` (Étape 6), `/livrer`, `/plan` et `/design` branchent dessus. Si absente ou invalide, ils stoppent avec un message demandant de relancer `/start`.
 
 ## Stack
 
@@ -147,6 +147,8 @@ Ne jamais annoncer "c'est bon", "ça marche", "tâche terminée" sans avoir vér
 | `webapp` / `site` | UI (`.tsx`, `.css`, page, layout) | **Playwright MCP** : `browser_navigate` + `browser_snapshot` ou `browser_take_screenshot` (screenshot dans `tmp/`, supprime après) |
 | `webapp` | API / BDD | `curl` (status + payload) ou query directe (table, colonnes, RLS) |
 | `automation` | Workflow n8n | `n8n_test_workflow` MCP ou `curl` webhook → vérifier output + status |
+| `mobile` | UI (SwiftUI / Compose) | Build + lancement sur simulateur / émulateur + captures (skill `tool-mobile-visual-check`) + flow de test (`ui_tests:`) |
+| `desktop` | UI (fenêtre, menu) | Build natif de l'OS + lancement + captures (skill `tool-desktop-visual-check`) + test UI de l'OS (`ui_tests:`) |
 | Tout type | Tests automatisés | `npm test` / `vitest` → 0 failure |
 
 Si tu n'arrives pas à raconter à l'utilisateur **exactement ce que tu as vérifié et observé**, tu n'as pas auto-évalué. "Ça devrait marcher" n'est pas une vérification. Les fichiers temporaires vont dans `tmp/` (gitignored) — nettoie après usage.

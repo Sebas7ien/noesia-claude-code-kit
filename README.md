@@ -64,6 +64,17 @@ Lis [`docs/KIT.md`](docs/KIT.md). Méta-doc complète : tous les skills, parcour
 {action proposée}   ← /execute, /plan, /livrer, /evoluer selon l'état détecté
 ```
 
+**Parcours 3 bis — Projet existant sans PRD (tu veux y ajouter une feature)** :
+```
+/feature            ← lit le code + cadre la feature + crée PRD/STATUS/STRUCTURE manquants
+   ↓
+/close → /clear
+   ↓
+/plan docs/features/{date}-{slug}.md   (ou /evoluer si le projet est livré)
+   ↓
+/execute → /validate → /close
+```
+
 **Parcours 3 — Évolution (projet livré, tu veux ajouter une feature)** :
 ```
 /prime              ← détecte projet livré → propose /evoluer
@@ -109,7 +120,7 @@ Une fois dans Claude, tape :
 1. **Bootstrap** (si clone direct du kit) — reinit historique git + remote `upstream` + commit initial, en une question oui/non
 2. **Détection projet** — lit MEMORY.md + CLAUDE.md + PRD.md. Si projet existant détecté → bifurque vers `/prime`.
 3. **Visite du kit** (skippable)
-4. **3 questions de cadrage** → remplit la section `## Identité` de ton `CLAUDE.md` + écrit `project_type` ∈ `{webapp, site, automation}`
+4. **3 questions de cadrage** → remplit la section `## Identité` de ton `CLAUDE.md` + écrit `project_type` ∈ `{webapp, site, automation, desktop, mobile}`
 5. **Sécurisation des credentials** → `.env` créé et gitignored, `.mcp.json` avec syntaxe `${VAR}`
 6. **Vérification de l'outillage** → Playwright + n8n MCP + plugin frontend-design
 7. **Routage** → `/brainstorm` (idée floue) ou `/architect` (idée claire) ou `/prime` (projet existant)
@@ -122,7 +133,7 @@ Sortie : projet cadré, outillage testé, prochain skill suggéré.
 
 | Skill | Rôle | Statut |
 |-------|------|--------|
-| `/start` | Onboarding piloté (5 phases + détection projet existant qui bifurque vers `/prime`). À taper 1x à l'ouverture. Écrit la variable `project_type` ∈ {webapp, site, automation}. | ✅ |
+| `/start` | Onboarding piloté (5 phases + détection projet existant qui bifurque vers `/prime`). À taper 1x à l'ouverture. Écrit la variable `project_type` ∈ {webapp, site, automation, desktop, mobile}. | ✅ |
 | `/brainstorm` | Clarifier une idée vague en 3 questions. Route 2 délègue à `research-delegate` pour explorer projets similaires. | ✅ |
 | `/architect` | Produire un `PRD.md` structuré + **Étape 2b demande les providers favoris** (hosting/BDD/email) avant de figer la stack + **Étape 6 Provisioning & Scaffold** (scaffold le repo selon `project_type` + providers retenus + écriture `.env`). Écrit la section `## Stack` du `CLAUDE.md`. | ✅ |
 | `/design` *(webapp uniquement)* | **Définit** le design system au format **DESIGN.md officiel Google** (open-source, spec alpha — YAML tokens + 8 sections markdown). Template fourni dans `.claude/skills/design/template.md`. **Complémentaire** au plugin Anthropic `frontend-design` qui lit `DESIGN.md` pour build des composants cohérents. | ✅ |
@@ -132,6 +143,7 @@ Sortie : projet cadré, outillage testé, prochain skill suggéré.
 | `/close` | Clôturer la phase : marque ✅ Terminée dans le PRD + commit conventionnel + harvest learnings + handoff. **Mandatory** après `/validate ✅`. | ✅ |
 | `/livrer` | Déployer en production selon `## Stack` (hosting/BDD/email **détectés depuis CLAUDE.md, jamais hardcode** — Vercel/Netlify/Cloudflare/GitHub Pages/autre) + checklist policy d'accès advisory + smoke test. | ✅ |
 | `/evoluer` | Ajouter une nouvelle feature à un projet livré : insère Phase N+1 dans PRD existant sans écraser (regex parse + 3 questions + idempotent). | ✅ |
+| `/feature` | Ajouter une feature à un projet **existant sans PRD** (jamais passé par `/architect`) : lit le code, cadre la feature, écrit `docs/features/{date}-{slug}.md` et crée les artefacts manquants (PRD reconstitué, STATUS, STRUCTURE). Aucun routing automatique. | ✅ |
 
 **Skills optionnels avancés** :
 
@@ -144,9 +156,9 @@ Sortie : projet cadré, outillage testé, prochain skill suggéré.
 - Pour debugger un bug → tape `/debug` (built-in Claude Code natif). **Règle de comportement** : écris d'abord un test de régression qui reproduit le bug, puis fais-le passer (TDD).
 - **Mémoire persistante** : `/close` maintient automatiquement `memory/learnings/`, `memory/topics/`, `memory/decisions.md` et `MEMORY.md` (index racine) à chaque clôture de phase, via 3 questions ciblées (décision arch ? gotcha ? pattern ?). **L'utilisateur n'édite jamais ces fichiers à la main.** Détails dans le template `CLAUDE.md` section `## Mémoire persistante`.
 
-Workflow type : `/start` → `/brainstorm`? → `/architect` (PRD + providers + scaffold) → `/design`? → `/plan` Phase 1 → `/execute` → `/validate` → `/close` → `/plan` Phase 2 → ... → `/livrer`. Reprise : `/prime`. Évolution : `/evoluer`.
+Workflow type : `/start` → `/brainstorm`? → `/architect` (PRD + providers + scaffold) → `/design`? → `/plan` Phase 1 → `/execute` → `/validate` → `/close` → `/plan` Phase 2 → ... → `/livrer`. Reprise : `/prime`. Évolution : `/evoluer` (projet avec PRD) ou `/feature` (projet existant sans PRD).
 
-`/design` est conditionnel — skip si `project_type` ∈ {site, automation}. `/challenge` est optionnel.
+`/design` est conditionnel — skip si `project_type` ∈ {site, automation, desktop, mobile} (pour desktop/mobile : `design-ui-proposal`). `/challenge` est optionnel.
 
 ## Sous-agent
 
@@ -172,13 +184,16 @@ Voir `.claude/rules/README.md` pour le détail du pattern.
 
 ## Exemples remplis
 
-Trois exemples, un par `project_type` :
+Six exemples : un par `project_type`, plus un exemple de `/feature` sur projet existant :
 
 | Exemple | `project_type` | Niveau | Stack |
 |---------|---------------|--------|-------|
 | [`examples/site-vitrine-coach/`](examples/site-vitrine-coach/) | `site` | LITE | Next.js + Vercel + Resend |
 | [`examples/webapp-saas-freelance-devis/`](examples/webapp-saas-freelance-devis/) | `webapp` | STANDARD | Next.js + Supabase + n8n + Resend + Vercel |
 | [`examples/automation-n8n-veille-rss/`](examples/automation-n8n-veille-rss/) | `automation` | STANDARD | n8n + Supabase + Anthropic Haiku + Slack |
+| [`examples/desktop-assistant-vocal-macos/`](examples/desktop-assistant-vocal-macos/) | `desktop` | STANDARD | Swift + SwiftUI + WhisperKit + Ollama |
+| [`examples/mobile-suivi-habitudes/`](examples/mobile-suivi-habitudes/) | `mobile` | STANDARD | SwiftUI + Compose, stockage local, Maestro |
+| [`examples/feature-projet-existant/`](examples/feature-projet-existant/) | `webapp` (existant) | STANDARD | Node + TypeScript + PostgreSQL |
 
 Détails et critères de choix dans [`examples/README.md`](examples/README.md). Ouvre ces fichiers en parallèle de tes propres essais — le format est plus parlant qu'une longue doc.
 

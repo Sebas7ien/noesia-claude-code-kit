@@ -3,6 +3,26 @@
 > Toutes les versions notables du kit Noesia Claude Code.
 > Format inspiré de [Keep a Changelog](https://keepachangelog.com/). Versions [SemVer](https://semver.org/lang/fr/).
 
+## v2.9.0 — 2026-10-14
+
+### Ajouté
+
+- **Skill `/feature`** : ajouter une feature à un projet **existant sans PRD**. Lit le code, cadre la feature (3-5 questions, dont la surface sécurité), écrit `docs/features/{date}-{slug}.md`, crée après validation les artefacts manquants (PRD reconstitué, STATUS, STRUCTURE). Aucun routing automatique : l'utilisateur choisit `/plan` ou `/evoluer`.
+- **`project_type` `desktop` et `mobile`** (natif uniquement) dans `/start`, `/architect`, `/plan`, `/execute`, `/livrer` : questions dédiées, `ui_tests:` par OS, distribution (TestFlight, Play, DMG, MSIX, Flatpak), skills `tool-mobile-visual-check` et `tool-desktop-visual-check`, agent `design-ui-proposal`.
+- **Passe sécurité** : skill `tool-security-gate` (mode plan dans `/plan` Étape 3.5, mode gate dans `/execute` Étape 2.6), agents `security-gate` et `security-watch`, skill `security-watch`.
+- **Hosting auto-hébergé** : Coolify et VPS + Docker dans `/livrer` ; GitHub Pages comme défaut pour un projet 100 % statique ; gate de déploiement de `/close` étendu à tout hosting qui déploie au push.
+- **Trois exemples** : `desktop-assistant-vocal-macos`, `mobile-suivi-habitudes`, `feature-projet-existant`.
+
+### Corrigé
+
+- `validate-kit-v2.sh` : le check anti-leak D9 échouait sur macOS (padding d'espaces de `wc -l`).
+
+### Non-breaking
+
+Aucune signature de skill existant modifiée ; les valeurs `desktop` / `mobile` s'ajoutent à `project_type`.
+
+---
+
 ## v2.8.3 — 2026-05-21
 
 ### Ajouté
